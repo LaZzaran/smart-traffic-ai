@@ -76,7 +76,7 @@ graph LR
 
 1. Repo'yu klonlayın:
 ```bash
-git clone https://github.com/yourusername/smart-traffic-ai.git
+git clone https://github.com/LaZzaran/smart-traffic-ai.git
 cd smart-traffic-ai
 ```
 
@@ -184,9 +184,9 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICE
 
 ## 📞 İletişim
 
-Proje Sahibi - [@yourusername](https://github.com/yourusername)
+Proje Sahibi - [@LaZzaran](https://github.com/LaZzaran)
 
-Proje Linki: [https://github.com/yourusername/smart-traffic-ai](https://github.com/yourusername/smart-traffic-ai)
+Proje Linki: [https://github.com/LaZzaran/smart-traffic-ai](https://github.com/LaZzaran/smart-traffic-ai)
 
 ---
 
