@@ -21,8 +21,9 @@
 |---------|-----------|
 | 📊 Gerçek Zamanlı Analiz | Trafik verisi toplama ve analiz |
 | 🤖 AI Tahminleri | Yapay zeka tabanlı yoğunluk tahminleri |
-| 🗺️ İnteraktif Harita | Kullanıcı dostu harita arayüzü |
-| 🛣️ Akıllı Rotalar | Optimum rota önerileri |
+| 🗺️ İnteraktif Harita | OpenStreetMap tabanlı harita arayüzü |
+| 🛣️ Akıllı Rotalar | HERE Maps API ile optimum rota önerileri |
+| 🌤️ Hava Durumu Entegrasyonu | OpenWeatherMap ile hava koşulları analizi |
 | 📱 Mobil Uyumluluk | Responsive tasarım |
 
 ---
@@ -33,10 +34,12 @@
 ```python
 {
     "ana_framework": "FastAPI",
-    "veritabanı": ["SQLite (Dev)", "PostgreSQL (Prod)"],
+    "veritabanı": "PostgreSQL",
     "cache": "Redis",
     "validasyon": "Pydantic",
-    "async_jobs": "Celery"
+    "async_jobs": "Celery",
+    "migration": "Alembic",
+    "geo_utils": "GeoPy"
 }
 ```
 
@@ -44,7 +47,7 @@
 ```javascript
 {
     "framework": "Next.js",
-    "harita": "OpenStreetMap",
+    "harita": "OpenStreetMap + Leaflet",
     "styling": "TailwindCSS",
     "state_management": "React Query"
 }
@@ -64,6 +67,28 @@ deployment:
   - Docker
   - GitHub Actions
   - Vercel
+monitoring:
+  - Sentry
+  - Prometheus (opsiyonel)
+```
+
+### Ücretsiz API'lar 🌐
+```json
+{
+    "harita_servisleri": {
+        "OpenStreetMap": {
+            "Overpass API": "Yol ve POI verileri",
+            "Nominatim": "Geocoding servisi"
+        },
+        "HERE Maps": {
+            "Traffic API": "Gerçek zamanlı trafik",
+            "Routing API": "Rota optimizasyonu"
+        }
+    },
+    "hava_durumu": {
+        "OpenWeatherMap": "Hava koşulları ve tahminler"
+    }
+}
 ```
 
 ---
@@ -74,9 +99,12 @@ deployment:
 ```mermaid
 graph TD
     A[Frontend] --> B[Backend API]
-    B --> C[Veritabanı]
-    B --> D[Cache]
+    B --> C[PostgreSQL]
+    B --> D[Redis Cache]
     B --> E[ML Modeli]
+    B --> F[OSM API]
+    B --> G[HERE API]
+    B --> H[Weather API]
 ```
 
 ### Veri Akışı
@@ -85,14 +113,20 @@ sequenceDiagram
     participant U as Kullanıcı
     participant F as Frontend
     participant B as Backend
-    participant DB as Veritabanı
+    participant DB as PostgreSQL
+    participant C as Redis Cache
     participant ML as ML Model
+    participant API as Harici API'lar
     
-    U->>F: İstek
+    U->>F: Rota İsteği
     F->>B: API Call
-    B->>DB: Veri Sorgusu
-    B->>ML: Tahmin
-    ML->>B: Sonuç
+    B->>C: Cache Kontrol
+    alt Cache Miss
+        B->>DB: Veri Sorgusu
+        B->>API: Trafik/Hava Durumu
+        B->>ML: Tahmin
+        B->>C: Sonuçları Cache'le
+    end
     B->>F: Response
     F->>U: Görüntüleme
 ```
@@ -103,25 +137,30 @@ sequenceDiagram
 
 ### Faz 1: Temel Altyapı (2 Hafta)
 - [x] Proje planlama
+- [x] PostgreSQL kurulumu
 - [ ] OpenStreetMap API entegrasyonu
-- [ ] Veritabanı şeması
-- [ ] CRUD operasyonları
+- [ ] HERE Maps API entegrasyonu
+- [ ] OpenWeatherMap API entegrasyonu
+- [ ] Redis cache implementasyonu
 - [ ] Auth sistemi
 
 ### Faz 2: AI Model (2 Hafta)
-- [ ] Veri toplama
+- [ ] Veri toplama (OSM + HERE)
+- [ ] Hava durumu verisi entegrasyonu
 - [ ] Model geliştirme
-- [ ] Optimizasyon
+- [ ] TensorFlow Lite optimizasyonu
 
 ### Faz 3: Frontend (2 Hafta)
 - [ ] Next.js setup
-- [ ] UI/UX
-- [ ] Harita entegrasyonu
+- [ ] OpenStreetMap + Leaflet entegrasyonu
+- [ ] Responsive UI/UX
+- [ ] Real-time veri görselleştirme
 
 ### Faz 4: Test & Deploy (1 Hafta)
-- [ ] Testing
-- [ ] Deployment
-- [ ] Monitoring
+- [ ] Unit ve integration testler
+- [ ] Docker containerization
+- [ ] CI/CD pipeline
+- [ ] Monitoring setup
 
 ---
 
@@ -137,14 +176,14 @@ sequenceDiagram
 - Lazy loading
 
 #### Asset Optimization
-- Image optimization
-- Font optimization
+- Image optimization (next/image)
+- Vector harita tiles
 - CSS minification
 
 #### Caching
 - Service Worker
 - PWA
-- Browser cache
+- Redis ile API cache
 </details>
 
 ### Backend ⚙️
@@ -152,14 +191,15 @@ sequenceDiagram
 <summary>Detayları Göster</summary>
 
 #### Database
-- İndeksleme
+- PostgreSQL indexing
 - Query optimization
 - Connection pooling
 
 #### API
-- Compression
+- Response compression
 - Pagination
 - Batch işlemler
+- API rate limiting
 </details>
 
 ---
@@ -173,6 +213,7 @@ graph TD
     B --> C[Input Validation]
     C --> D[Rate Limiting]
     D --> E[Security Headers]
+    E --> F[API Key Rotation]
 ```
 
 ### Güvenlik Kontrol Listesi
@@ -183,6 +224,8 @@ graph TD
 - [x] CORS
 - [x] SQL Injection Protection
 - [x] XSS Protection
+- [x] API Key Security
+- [x] Data Encryption
 
 ---
 
@@ -196,13 +239,15 @@ graph TD
 | 🎯 Model Doğruluk | > 85% |
 | 📱 Lighthouse Score | > 90 |
 | 🧪 Test Coverage | > 80% |
+| 💾 Cache Hit Ratio | > 75% |
 
 ### Risk Yönetimi
 | Risk | Çözüm |
 |------|--------|
-| 📡 Veri Kaynağı | Fallback & Cache |
-| ⚡ Performans | Optimizasyon & CDN |
-| 🔒 Güvenlik | Sürekli Audit |
+| 📡 API Kesintileri | Fallback & Cache |
+| ⚡ Performans | PostgreSQL + Redis Optimizasyonu |
+| 🔒 API Key Güvenliği | Key Rotation & Encryption |
+| 📊 Veri Tutarlılığı | Transaction & Validation |
 
 ---
 
@@ -230,13 +275,14 @@ gantt
 
 ### ⏳ Proje İlerlemesi
 ```
-[██░░░░░░░░░░░░░░░░░░] 20%
+[███░░░░░░░░░░░░░░░░░] 25%
 ```
 
 **Tamamlanan Aşamalar:**
 - ✅ Proje Planlama
 - ✅ Roadmap Oluşturma
-- ⏳ Temel Altyapı Geliştirme
+- ✅ PostgreSQL Setup
+- ⏳ API Entegrasyonları
 - ⏳ AI Model Geliştirme
 - ⏳ Frontend Geliştirme
 - ⏳ Test ve Deployment 
