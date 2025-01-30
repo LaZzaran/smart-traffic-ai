@@ -228,4 +228,15 @@ gantt
 
 ---
 
-![Progress](https://progress-bar.dev/20/?title=Proje%20İlerlemesi) 
+### ⏳ Proje İlerlemesi
+```
+[██░░░░░░░░░░░░░░░░░░] 20%
+```
+
+**Tamamlanan Aşamalar:**
+- ✅ Proje Planlama
+- ✅ Roadmap Oluşturma
+- ⏳ Temel Altyapı Geliştirme
+- ⏳ AI Model Geliştirme
+- ⏳ Frontend Geliştirme
+- ⏳ Test ve Deployment 
